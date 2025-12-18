@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الإدارة - نظام متكامل</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e90ff;
+            --secondary-color: #2f3542;
+            --success-color: #2ed573;
+            --danger-color: #ff4757;
+            --warning-color: #ffa502;
+            --info-color: #3742fa;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --sidebar-width: 250px;
+            --header-height: 70px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            direction: rtl;
+        }
+
+        /* Login Page */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color), #0c7bb3);
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .login-icon {
+            font-size: 50px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .btn-login {
+            background: var(--primary-color);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background: #0c7bb3;
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* Dashboard */
+        .dashboard-container {
+            display: none;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #0c7bb3);
+            color: white;
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .user-menu {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            min-width: 200px;
+            display: none;
+            z-index: 101;
+        }
+
+        .user-menu.active {
+            display: block;
+        }
+
+        .user-menu-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-menu-item:hover {
+            background: #f8f9fa;
+        }
+
+        .user-menu-item.logout {
+            color: var(--danger-color);
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin-top: var(--header-height);
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        /* Sidebar */
+        nav {
+            background: var(--secondary-color);
+            color: white;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--header-height));
+            position: fixed;
+            right: 0;
+            top: var(--header-height);
+            transition: all 0.3s;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav ul li {
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        nav ul li:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        nav ul li.active {
+            background: var(--primary-color);
+            border-right: 4px solid white;
+        }
+
+        nav ul li i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        main {
+            margin-right: var(--sidebar-width);
+            padding: 20px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .card-info h3 {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 5px;
+        }
+
+        .card-info p {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .clients-card .card-icon { background: var(--primary-color); }
+        .subs-card .card-icon { background: var(--success-color); }
+        .design-card .card-icon { background: var(--warning-color); }
+        .admins-card .card-icon { background: var(--info-color); }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            text-align: right;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Buttons */
+        .btn-add {
+            background: var(--success-color);
+            color: white;
+            margin: 10px 0;
+            width: auto;
+        }
+
+        .btn-edit {
+            background: var(--primary-color);
+            color: white;
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .btn-delete {
+            background: var(--danger-color);
+            color: white;
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .btn-view {
+            background: var(--info-color);
+            color: white;
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 0 0 10px 10px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Search and Filters */
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            nav {
+                width: 70px;
+            }
+            
+            nav ul li span {
+                display: none;
+            }
+            
+            main {
+                margin-right: 70px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            nav {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-top: 0;
+            }
+            
+            nav ul {
+                display: flex;
+                justify-content: space-around;
+            }
+            
+            nav ul li {
+                flex-direction: column;
+                text-align: center;
+                padding: 10px;
+                border-bottom: none;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            nav ul li.active {
+                border-right: none;
+                border-bottom: 3px solid white;
+            }
+            
+            main {
+                margin-right: 0;
+            }
+            
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <div class="login-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h2>تسجيل الدخول</h2>
+            <div class="form-group">
+                <label for="loginUsername">اسم المستخدم</label>
+                <input type="text" id="loginUsername" class="form-control" placeholder="أدخل اسم المستخدم" value="admin">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">كلمة المرور</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور" value="admin123">
+            </div>
+            <button id="loginBtn" class="btn btn-login">
+                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+            </button>
+            <div id="loginError" class="error-message">
+                اسم المستخدم أو كلمة المرور غير صحيحة
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboardPage" class="dashboard-container">
+        <header>
+            <div class="logo-container">
+                <div class="logo-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="logo">لوحة التحكم الإدارية</div>
+            </div>
+            
+            <div class="user-info">
+                <div class="avatar" id="userAvatar">م</div>
+                <div id="userDropdown" class="user-menu">
+                    <div class="user-menu-item">
+                        <i class="fas fa-user"></i>
+                        <span id="currentUserName">المشرف</span>
+                    </div>
+                    <div class="user-menu-item">
+                        <i class="fas fa-cog"></i>
+                        <span>الإعدادات</span>
+                    </div>
+                    <div class="user-menu-item logout" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل الخروج</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="container">
+            <nav>
+                <ul>
+                    <li class="active" onclick="showSection('dashboard')">
+                        <i class="fas fa-home"></i>
+                        <span>الرئيسية</span>
+                    </li>
+                    <li onclick="showSection('clients')">
+                        <i class="fas fa-users"></i>
+                        <span>العملاء</span>
+                    </li>
+                    <li onclick="showSection('subscriptions')">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>الاشتراكات</span>
+                    </li>
+                    <li onclick="showSection('design')">
+                        <i class="fas fa-paint-brush"></i>
+                        <span>طلبات التصميم</span>
+                    </li>
+                    <li onclick="showSection('admins')">
+                        <i class="fas fa-user-shield"></i>
+                        <span>المشرفين</span>
+                    </li>
+                    <li onclick="showSection('reports')">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>التقارير</span>
+                    </li>
+                </ul>
+            </nav>
+            
+            <main>
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="section active">
+                    <h2><i class="fas fa-home"></i> الرئيسية</h2>
+                    
+                    <div class="dashboard-cards">
+                        <div class="card clients-card">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="card-info">
+                                <h3>إجمالي العملاء</h3>
+                                <p id="totalClients">0</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card subs-card">
+                            <div class="card-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="card-info">
+                                <h3>الاشتراكات النشطة</h3>
+                                <p id="totalSubs">0</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card design-card">
+                            <div class="card-icon">
+                                <i class="fas fa-paint-brush"></i>
+                            </div>
+                            <div class="card-info">
+                                <h3>طلبات التصميم</h3>
+                                <p id="totalDesign">0</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card admins-card">
+                            <div class="card-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="card-info">
+                                <h3>المشرفين</h3>
+                                <p id="totalAdmins">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>آخر العملاء المضافين</h3>
+                    <div class="table-container">
+                        <table id="recentClients">
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>الهاتف</th>
+                                    <th>تاريخ الإضافة</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملؤها بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Clients Section -->
+                <section id="clients" class="section">
+                    <h2><i class="fas fa-users"></i> إدارة العملاء</h2>
+                    
+                    <div class="search-container">
+                        <div class="search-box">
+                            <input type="text" id="clientSearch" placeholder="ابحث عن عميل...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button class="btn btn-add" onclick="openClientModal()">
+                            <i class="fas fa-plus"></i> إضافة عميل جديد
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="clientsTable">
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>الهاتف</th>
+                                    <th>تاريخ الإضافة</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملؤها بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Subscriptions Section -->
+                <section id="subscriptions" class="section">
+                    <h2><i class="fas fa-calendar-check"></i> إدارة الاشتراكات</h2>
+                    
+                    <div class="search-container">
+                        <div class="search-box">
+                            <input type="text" id="subscriptionSearch" placeholder="ابحث عن اشتراك...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <select id="subscriptionFilter" class="form-control" style="width: auto;">
+                            <option value="all">جميع الاشتراكات</option>
+                            <option value="active">نشطة فقط</option>
+                            <option value="expired">منتهية</option>
+                        </select>
+                        <button class="btn btn-add" onclick="openSubscriptionModal()">
+                            <i class="fas fa-plus"></i> إضافة اشتراك جديد
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="subsTable">
+                            <thead>
+                                <tr>
+                                    <th>اسم العميل</th>
+                                    <th>الباقة</th>
+                                    <th>السعر</th>
+                                    <th>تاريخ البداية</th>
+                                    <th>تاريخ النهاية</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملؤها بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Design Requests Section -->
+                <section id="design" class="section">
+                    <h2><i class="fas fa-paint-brush"></i> طلبات التصميم</h2>
+                    
+                    <div class="search-container">
+                        <div class="search-box">
+                            <input type="text" id="designSearch" placeholder="ابحث عن طلب تصميم...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <select id="designFilter" class="form-control" style="width: auto;">
+                            <option value="all">جميع الطلبات</option>
+                            <option value="pending">قيد الانتظار</option>
+                            <option value="in-progress">قيد التنفيذ</option>
+                            <option value="completed">مكتملة</option>
+                        </select>
+                        <button class="btn btn-add" onclick="openDesignModal()">
+                            <i class="fas fa-plus"></i> إضافة طلب تصميم
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="designTable">
+                            <thead>
+                                <tr>
+                                    <th>اسم العميل</th>
+                                    <th>نوع التصميم</th>
+                                    <th>السعر</th>
+                                    <th>التفاصيل</th>
+                                    <th>تاريخ الطلب</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملؤها بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Admins Section -->
+                <section id="admins" class="section">
+                    <h2><i class="fas fa-user-shield"></i> إدارة المشرفين</h2>
+                    
+                    <div class="search-container">
+                        <div class="search-box">
+                            <input type="text" id="adminSearch" placeholder="ابحث عن مشرف...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button class="btn btn-add" onclick="openAdminModal()">
+                            <i class="fas fa-plus"></i> إضافة مشرف جديد
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="adminsTable">
+                            <thead>
+                                <tr>
+                                    <th>اسم المستخدم</th>
+                                    <th>الاسم الكامل</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>الدور</th>
+                                    <th>تاريخ الإضافة</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملؤها بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Reports Section -->
+                <section id="reports" class="section">
+                    <h2><i class="fas fa-chart-bar"></i> التقارير والإحصائيات</h2>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+                        <div style="background: white; padding: 20px; border-radius: 10px; flex: 1; min-width: 300px;">
+                            <h3>إحصائيات العملاء</h3>
+                            <canvas id="clientsChart" width="400" height="200"></canvas>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 10px; flex: 1; min-width: 300px;">
+                            <h3>إحصائيات الاشتراكات</h3>
+                            <canvas id="subscriptionsChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                        <h3>إحصائيات الإيرادات</h3>
+                        <div style="display: flex; justify-content: space-around; flex-wrap: wrap; margin-top: 20px;">
+                            <div style="text-align: center;">
+                                <h4>إجمالي إيرادات الاشتراكات</h4>
+                                <p style="font-size: 24px; font-weight: bold; color: var(--success-color);" id="totalSubscriptionRevenue">0 ر.س</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <h4>إجمالي إيرادات التصاميم</h4>
+                                <p style="font-size: 24px; font-weight: bold; color: var(--primary-color);" id="totalDesignRevenue">0 ر.س</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <h4>الإيراد الشهري</h4>
+                                <p style="font-size: 24px; font-weight: bold; color: var(--info-color);" id="monthlyRevenue">0 ر.س</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Client Modal -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="clientModalTitle">إضافة عميل جديد</h3>
+                <span class="close-modal" onclick="closeModal('clientModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="clientName">اسم العميل *</label>
+                    <input type="text" id="clientName" class="form-control" placeholder="أدخل اسم العميل">
+                </div>
+                <div class="form-group">
+                    <label for="clientEmail">البريد الإلكتروني *</label>
+                    <input type="email" id="clientEmail" class="form-control" placeholder="example@domain.com">
+                </div>
+                <div class="form-group">
+                    <label for="clientPhone">رقم الهاتف *</label>
+                    <input type="text" id="clientPhone" class="form-control" placeholder="+966XXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label for="clientCompany">الشركة (اختياري)</label>
+                    <input type="text" id="clientCompany" class="form-control" placeholder="اسم الشركة">
+                </div>
+                <div class="form-group">
+                    <label for="clientNotes">ملاحظات (اختياري)</label>
+                    <textarea id="clientNotes" class="form-control" rows="3" placeholder="ملاحظات إضافية"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-add" onclick="saveClient()">حفظ</button>
+                <button class="btn btn-delete" onclick="closeModal('clientModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subscription Modal -->
+    <div id="subscriptionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="subscriptionModalTitle">إضافة اشتراك جديد</h3>
+                <span class="close-modal" onclick="closeModal('subscriptionModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="subscriptionClient">اسم العميل *</label>
+                    <select id="subscriptionClient" class="form-control">
+                        <option value="">اختر عميل</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionPackage">الباقة *</label>
+                    <select id="subscriptionPackage" class="form-control">
+                        <option value="basic">الباقة الأساسية</option>
+                        <option value="silver">الباقة الفضية</option>
+                        <option value="gold">الباقة الذهبية</option>
+                        <option value="platinum">الباقة البلاتينية</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionPrice">السعر (ر.س) *</label>
+                    <input type="number" id="subscriptionPrice" class="form-control" placeholder="أدخل السعر" value="500">
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionStartDate">تاريخ البداية *</label>
+                    <input type="date" id="subscriptionStartDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionEndDate">تاريخ النهاية *</label>
+                    <input type="date" id="subscriptionEndDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionStatus">الحالة</label>
+                    <select id="subscriptionStatus" class="form-control">
+                        <option value="active">نشط</option>
+                        <option value="expired">منتهي</option>
+                        <option value="pending">قيد الانتظار</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionNotes">ملاحظات (اختياري)</label>
+                    <textarea id="subscriptionNotes" class="form-control" rows="3" placeholder="ملاحظات إضافية"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-add" onclick="saveSubscription()">حفظ</button>
+                <button class="btn btn-delete" onclick="closeModal('subscriptionModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Design Modal -->
+    <div id="designModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="designModalTitle">إضافة طلب تصميم جديد</h3>
+                <span class="close-modal" onclick="closeModal('designModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="designClient">اسم العميل *</label>
+                    <select id="designClient" class="form-control">
+                        <option value="">اختر عميل</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="designType">نوع التصميم *</label>
+                    <select id="designType" class="form-control">
+                        <option value="logo">تصميم شعار (Logo)</option>
+                        <option value="website">تصميم موقع ويب</option>
+                        <option value="mobile">تصميم تطبيق جوال</option>
+                        <option value="branding">هوية بصرية</option>
+                        <option value="social">تصاميم وسائل التواصل</option>
+                        <option value="other">تصميم آخر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="designPrice">السعر (ر.س) *</label>
+                    <input type="number" id="designPrice" class="form-control" placeholder="أدخل السعر" value="1000">
+                </div>
+                <div class="form-group">
+                    <label for="designDetails">تفاصيل الطلب *</label>
+                    <textarea id="designDetails" class="form-control" rows="4" placeholder="أدخل تفاصيل طلب التصميم"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="designDate">تاريخ الطلب</label>
+                    <input type="date" id="designDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="designStatus">الحالة</label>
+                    <select id="designStatus" class="form-control">
+                        <option value="pending">قيد الانتظار</option>
+                        <option value="in-progress">قيد التنفيذ</option>
+                        <option value="completed">مكتمل</option>
+                        <option value="cancelled">ملغى</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="designNotes">ملاحظات (اختياري)</label>
+                    <textarea id="designNotes" class="form-control" rows="3" placeholder="ملاحظات إضافية"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-add" onclick="saveDesign()">حفظ</button>
+                <button class="btn btn-delete" onclick="closeModal('designModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="adminModalTitle">إضافة مشرف جديد</h3>
+                <span class="close-modal" onclick="closeModal('adminModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="adminUsername">اسم المستخدم *</label>
+                    <input type="text" id="adminUsername" class="form-control" placeholder="أدخل اسم المستخدم">
+                </div>
+                <div class="form-group">
+                    <label for="adminFullName">الاسم الكامل *</label>
+                    <input type="text" id="adminFullName" class="form-control" placeholder="أدخل الاسم الكامل">
+                </div>
+                <div class="form-group">
+                    <label for="adminEmail">البريد الإلكتروني *</label>
+                    <input type="email" id="adminEmail" class="form-control" placeholder="example@domain.com">
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">كلمة المرور *</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="أدخل كلمة المرور">
+                </div>
+                <div class="form-group">
+                    <label for="adminRole">الدور *</label>
+                    <select id="adminRole" class="form-control">
+                        <option value="admin">مشرف</option>
+                        <option value="superadmin">مشرف رئيسي</option>
+                        <option value="editor">محرر</option>
+                        <option value="viewer">مشاهد</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="adminStatus">الحالة</label>
+                    <select id="adminStatus" class="form-control">
+                        <option value="active">نشط</option>
+                        <option value="inactive">غير نشط</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-add" onclick="saveAdmin()">حفظ</button>
+                <button class="btn btn-delete" onclick="closeModal('adminModal')">إلغاء</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // البيانات المخزنة محلياً
+        let admins = JSON.parse(localStorage.getItem('admins')) || [
+            { username: 'admin', fullName: 'المشرف الرئيسي', email: 'admin@system.com', password: 'admin123', role: 'superadmin', status: 'active', date: new Date().toISOString().split('T')[0] },
+            { username: 'editor', fullName: 'محرر النظام', email: 'editor@system.com', password: 'editor123', role: 'editor', status: 'active', date: new Date().toISOString().split('T')[0] }
+        ];
+        
+        let clients = JSON.parse(localStorage.getItem('clients')) || [];
+        let subscriptions = JSON.parse(localStorage.getItem('subscriptions')) || [];
+        let designRequests = JSON.parse(localStorage.getItem('designRequests')) || [];
+        
+        let currentUser = null;
+        let editIndex = -1;
+        let editType = ''; // 'client', 'subscription', 'design', 'admin'
+        
+        // تهيئة التطبيق عند التحميل
+        document.addEventListener('DOMContentLoaded', function() {
+            // حفظ البيانات الأولية إذا لم تكن موجودة
+            if (!localStorage.getItem('admins')) {
+                localStorage.setItem('admins', JSON.stringify(admins));
+            }
+            
+            // إضافة بيانات تجريبية إذا لم تكن موجودة
+            if (clients.length === 0) {
+                initializeSampleData();
+            }
+            
+            // إضافة مستمعين للأزرار
+            document.getElementById('loginBtn').addEventListener('click', login);
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('userAvatar').addEventListener('click', toggleUserMenu);
+            
+            // إغلاق قائمة المستخدم عند النقر خارجها
+            document.addEventListener('click', function(event) {
+                const userMenu = document.getElementById('userDropdown');
+                const avatar = document.getElementById('userAvatar');
+                
+                if (!avatar.contains(event.target) && !userMenu.contains(event.target)) {
+                    userMenu.classList.remove('active');
+                }
+            });
+            
+            // السماح بالدخول باستخدام زر Enter في صفحة التسجيل
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+        });
+        
+        // تهيئة بيانات تجريبية
+        function initializeSampleData() {
+            const sampleClients = [
+                { id: 1, name: "أحمد محمد", email: "ahmed@example.com", phone: "+966500123456", company: "شركة التقنية", notes: "عميل مميز", date: "2023-10-15", status: "active" },
+                { id: 2, name: "سارة خالد", email: "sara@example.com", phone: "+966501234567", company: "مؤسسة الإبداع", notes: "تطلب خدمات تصميم متكررة", date: "2023-10-10", status: "active" },
+                { id: 3, name: "محمد علي", email: "mohammed@example.com", phone: "+966502345678", company: "متجر أونلاين", notes: "", date: "2023-10-05", status: "active" }
+            ];
+            
+            const sampleSubscriptions = [
+                { id: 1, clientId: 1, clientName: "أحمد محمد", package: "الباقة الذهبية", price: 1200, startDate: "2023-10-01", endDate: "2024-09-30", status: "active", notes: "" },
+                { id: 2, clientId: 2, clientName: "سارة خالد", package: "الباقة الفضية", price: 800, startDate: "2023-09-15", endDate: "2024-09-14", status: "active", notes: "" },
+                { id: 3, clientId: 3, clientName: "محمد علي", package: "الباقة الأساسية", price: 500, startDate: "2023-08-01", endDate: "2024-07-31", status: "active", notes: "" }
+            ];
+            
+            const sampleDesigns = [
+                { id: 1, clientId: 1, clientName: "أحمد محمد", type: "شعار Logo", price: 1500, details: "تصميم شعار لشركة تقنية حديثة بألوان زرقاء وبيضاء", date: "2023-10-12", status: "completed", notes: "" },
+                { id: 2, clientId: 2, clientName: "سارة خالد", type: "تصميم موقع ويب", price: 5000, details: "تصميم موقع إلكتروني متكامل لمؤسسة إبداعية", date: "2023-10-08", status: "in-progress", notes: "يجب التسليم خلال أسبوعين" },
+                { id: 3, clientId: 3, clientName: "محمد علي", type: "هوية بصرية", price: 3000, details: "تصميم هوية بصرية متكاملة لشركة ناشئة في مجال التجارة الإلكترونية", date: "2023-10-01", status: "pending", notes: "بانتظار الموافقة النهائية" }
+            ];
+            
+            clients = sampleClients;
+            subscriptions = sampleSubscriptions;
+            designRequests = sampleDesigns;
+            
+            localStorage.setItem('clients', JSON.stringify(clients));
+            localStorage.setItem('subscriptions', JSON.stringify(subscriptions));
+            localStorage.setItem('designRequests', JSON.stringify(designRequests));
+        }
+        
+        // تسجيل الدخول
+        function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const errorElement = document.getElementById('loginError');
+            
+            if (!username || !password) {
+                errorElement.textContent = 'الرجاء إدخال اسم المستخدم وكلمة المرور';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            // البحث عن المستخدم في قاعدة البيانات
+            const admin = admins.find(a => a.username === username && a.password === password && a.status === 'active');
+            
+            if (admin) {
+                currentUser = admin;
+                errorElement.style.display = 'none';
+                
+                // عرض لوحة التحكم وإخفاء صفحة التسجيل
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
+                
+                // تحديث معلومات المستخدم في الرأس
+                document.getElementById('currentUserName').textContent = currentUser.fullName;
+                document.getElementById('userAvatar').textContent = currentUser.fullName.charAt(0);
+                
+                // تحديث البيانات في لوحة التحكم
+                updateDashboard();
+                updateClientsTable();
+                updateSubscriptionsTable();
+                updateDesignTable();
+                updateAdminsTable();
+                updateRecentClients();
+                
+                // تعبئة قوائم العملاء في النماذج
+                populateClientSelects();
+            } else {
+                errorElement.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+                errorElement.style.display = 'block';
+            }
+        }
+        
+        // تسجيل الخروج
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboardPage').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+            toggleUserMenu();
+        }
+        
+        // تبديل قائمة المستخدم
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+        
+        // عرض القسم المحدد
+        function showSection(sectionId) {
+            // إخفاء جميع الأقسام
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // إزالة النشط من جميع عناصر القائمة
+            document.querySelectorAll('nav ul li').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // إضافة النشط للقسم المحدد
+            document.getElementById(sectionId).classList.add('active');
+            
+            // إضافة النشط لعنصر القائمة المناسب
+            const navItem = document.querySelector(`nav ul li[onclick*="${sectionId}"]`);
+            if (navItem) {
+                navItem.classList.add('active');
+            }
+            
+            // إذا كان القسم هو التقارير، نقوم بتوليد الرسومات
+            if (sectionId === 'reports') {
+                setTimeout(generateCharts, 100);
+                calculateRevenue();
+            }
+        }
+        
+        // تحديث لوحة التحكم
+        function updateDashboard() {
+            // تحديث الأرقام
+            document.getElementById('totalClients').textContent = clients.length;
+            
+            const activeSubs = subscriptions.filter(sub => sub.status === 'active').length;
+            document.getElementById('totalSubs').textContent = activeSubs;
+            
+            document.getElementById('totalDesign').textContent = designRequests.length;
+            
+            document.getElementById('totalAdmins').textContent = admins.filter(a => a.status === 'active').length;
+        }
+        
+        // تحديث جدول العملاء
+        function updateClientsTable() {
+            const tbody = document.querySelector('#clientsTable tbody');
+            tbody.innerHTML = '';
+            
+            clients.forEach((client, index) => {
+                const statusClass = client.status === 'active' ? 'status-active' : 'status-inactive';
+                const statusText = client.status === 'active' ? 'نشط' : 'غير نشط';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${client.name}</td>
+                    <td>${client.email}</td>
+                    <td>${client.phone}</td>
+                    <td>${client.date || 'غير محدد'}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-edit" onclick="editClient(${index})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-delete" onclick="deleteClient(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // تحديث جدول الاشتراكات
+        function updateSubscriptionsTable() {
+            const tbody = document.querySelector('#subsTable tbody');
+            tbody.innerHTML = '';
+            
+            subscriptions.forEach((sub, index) => {
+                const statusClass = sub.status === 'active' ? 'status-active' : 
+                                  sub.status === 'expired' ? 'status-inactive' : 'status-pending';
+                const statusText = sub.status === 'active' ? 'نشط' : 
+                                  sub.status === 'expired' ? 'منتهي' : 'قيد الانتظار';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${sub.clientName}</td>
+                    <td>${sub.package}</td>
+                    <td>${sub.price} ر.س</td>
+                    <td>${sub.startDate}</td>
+                    <td>${sub.endDate}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-edit" onclick="editSubscription(${index})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-delete" onclick="deleteSubscription(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // تحديث جدول طلبات التصميم
+        function updateDesignTable() {
+            const tbody = document.querySelector('#designTable tbody');
+            tbody.innerHTML = '';
+            
+            designRequests.forEach((design, index) => {
+                const statusClass = design.status === 'completed' ? 'status-active' : 
+                                  design.status === 'in-progress' ? 'status-pending' : 'status-inactive';
+                const statusText = design.status === 'completed' ? 'مكتمل' : 
+                                  design.status === 'in-progress' ? 'قيد التنفيذ' : design.status === 'cancelled' ? 'ملغى' : 'قيد الانتظار';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${design.clientName}</td>
+                    <td>${design.type}</td>
+                    <td>${design.price} ر.س</td>
+                    <td>${design.details.substring(0, 30)}${design.details.length > 30 ? '...' : ''}</td>
+                    <td>${design.date || 'غير محدد'}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-view" onclick="viewDesignDetails(${index})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-edit" onclick="editDesign(${index})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-delete" onclick="deleteDesign(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // تحديث جدول المشرفين
+        function updateAdminsTable() {
+            // لا يسمح لمشرف عادي بتعديل المشرفين إلا إذا كان مشرفاً رئيسياً
+            if (currentUser.role !== 'superadmin') {
+                showSection('dashboard');
+                alert('لا تملك صلاحية الوصول إلى إدارة المشرفين');
+                return;
+            }
+            
+            const tbody = document.querySelector('#adminsTable tbody');
+            tbody.innerHTML = '';
+            
+            admins.forEach((admin, index) => {
+                const statusClass = admin.status === 'active' ? 'status-active' : 'status-inactive';
+                const statusText = admin.status === 'active' ? 'نشط' : 'غير نشط';
+                
+                // ترجمة الدور
+                let roleText = '';
+                switch(admin.role) {
+                    case 'superadmin': roleText = 'مشرف رئيسي'; break;
+                    case 'admin': roleText = 'مشرف'; break;
+                    case 'editor': roleText = 'محرر'; break;
+                    case 'viewer': roleText = 'مشاهد'; break;
+                    default: roleText = admin.role;
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${admin.username}</td>
+                    <td>${admin.fullName}</td>
+                    <td>${admin.email}</td>
+                    <td>${roleText}</td>
+                    <td>${admin.date || 'غير محدد'}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-edit" onclick="editAdmin(${index})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${admin.username !== currentUser.username ? 
+                                `<button class="btn btn-delete" onclick="deleteAdmin(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>` : 
+                                `<button class="btn btn-delete" disabled>
+                                    <i class="fas fa-trash"></i>
+                                </button>`
+                            }
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // تحديث العملاء الجدد
+        function updateRecentClients() {
+            const tbody = document.querySelector('#recentClients tbody');
+            tbody.innerHTML = '';
+            
+            // أخذ آخر 5 عملاء
+            const recentClients = [...clients]
+                .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+                .slice(0, 5);
+            
+            recentClients.forEach(client => {
+                const statusClass = client.status === 'active' ? 'status-active' : 'status-inactive';
+                const statusText = client.status === 'active' ? 'نشط' : 'غير نشط';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${client.name}</td>
+                    <td>${client.email}</td>
+                    <td>${client.phone}</td>
+                    <td>${client.date || 'غير محدد'}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // تعبئة قوائم اختيار العملاء في النماذج
+        function populateClientSelects() {
+            const subscriptionClientSelect = document.getElementById('subscriptionClient');
+            const designClientSelect = document.getElementById('designClient');
+            
+            // تنظيف الخيارات الحالية
+            subscriptionClientSelect.innerHTML = '<option value="">اختر عميل</option>';
+            designClientSelect.innerHTML = '<option value="">اختر عميل</option>';
+            
+            // إضافة العملاء إلى القوائم
+            clients.forEach(client => {
+                const option1 = document.createElement('option');
+                option1.value = client.id;
+                option1.textContent = client.name;
+                subscriptionClientSelect.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = client.id;
+                option2.textContent = client.name;
+                designClientSelect.appendChild(option2);
+            });
+        }
+        
+        // فتح نافذة إضافة/تعديل عميل
+        function openClientModal(index = -1) {
+            editIndex = index;
+            editType = 'client';
+            
+            const modal = document.getElementById('clientModal');
+            const title = document.getElementById('clientModalTitle');
+            
+            if (index >= 0) {
+                title.textContent = 'تعديل بيانات العميل';
+                const client = clients[index];
+                document.getElementById('clientName').value = client.name;
+                document.getElementById('clientEmail').value = client.email;
+                document.getElementById('clientPhone').value = client.phone;
+                document.getElementById('clientCompany').value = client.company || '';
+                document.getElementById('clientNotes').value = client.notes || '';
+            } else {
+                title.textContent = 'إضافة عميل جديد';
+                document.getElementById('clientName').value = '';
+                document.getElementById('clientEmail').value = '';
+                document.getElementById('clientPhone').value = '';
+                document.getElementById('clientCompany').value = '';
+                document.getElementById('clientNotes').value = '';
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        // فتح نافذة إضافة/تعديل اشتراك
+        function openSubscriptionModal(index = -1) {
+            editIndex = index;
+            editType = 'subscription';
+            
+            const modal = document.getElementById('subscriptionModal');
+            const title = document.getElementById('subscriptionModalTitle');
+            
+            // تعبئة قائمة العملاء
+            populateClientSelects();
+            
+            // تعيين تواريخ افتراضية
+            const today = new Date().toISOString().split('T')[0];
+            const nextYear = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0];
+            
+            if (index >= 0) {
+                title.textContent = 'تعديل بيانات الاشتراك';
+                const subscription = subscriptions[index];
+                document.getElementById('subscriptionClient').value = subscription.clientId;
+                document.getElementById('subscriptionPackage').value = subscription.package;
+                document.getElementById('subscriptionPrice').value = subscription.price;
+                document.getElementById('subscriptionStartDate').value = subscription.startDate;
+                document.getElementById('subscriptionEndDate').value = subscription.endDate;
+                document.getElementById('subscriptionStatus').value = subscription.status;
+                document.getElementById('subscriptionNotes').value = subscription.notes || '';
+            } else {
+                title.textContent = 'إضافة اشتراك جديد';
+                document.getElementById('subscriptionClient').value = '';
+                document.getElementById('subscriptionPackage').value = 'basic';
+                document.getElementById('subscriptionPrice').value = '500';
+                document.getElementById('subscriptionStartDate').value = today;
+                document.getElementById('subscriptionEndDate').value = nextYear;
+                document.getElementById('subscriptionStatus').value = 'active';
+                document.getElementById('subscriptionNotes').value = '';
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        // فتح نافذة إضافة/تعديل طلب تصميم
+        function openDesignModal(index = -1) {
+            editIndex = index;
+            editType = 'design';
+            
+            const modal = document.getElementById('designModal');
+            const title = document.getElementById('designModalTitle');
+            
+            // تعبئة قائمة العملاء
+            populateClientSelects();
+            
+            // تعيين تاريخ افتراضي
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (index >= 0) {
+                title.textContent = 'تعديل طلب التصميم';
+                const design = designRequests[index];
+                document.getElementById('designClient').value = design.clientId;
+                document.getElementById('designType').value = design.type;
+                document.getElementById('designPrice').value = design.price;
+                document.getElementById('designDetails').value = design.details;
+                document.getElementById('designDate').value = design.date || today;
+                document.getElementById('designStatus').value = design.status;
+                document.getElementById('designNotes').value = design.notes || '';
+            } else {
+                title.textContent = 'إضافة طلب تصميم جديد';
+                document.getElementById('designClient').value = '';
+                document.getElementById('designType').value = 'logo';
+                document.getElementById('designPrice').value = '1000';
+                document.getElementById('designDetails').value = '';
+                document.getElementById('designDate').value = today;
+                document.getElementById('designStatus').value = 'pending';
+                document.getElementById('designNotes').value = '';
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        // فتح نافذة إضافة/تعديل مشرف
+        function openAdminModal(index = -1) {
+            // التحقق من الصلاحية
+            if (currentUser.role !== 'superadmin') {
+                alert('لا تملك صلاحية إضافة أو تعديل المشرفين');
+                return;
+            }
+            
+            editIndex = index;
+            editType = 'admin';
+            
+            const modal = document.getElementById('adminModal');
+            const title = document.getElementById('adminModalTitle');
+            
+            if (index >= 0) {
+                title.textContent = 'تعديل بيانات المشرف';
+                const admin = admins[index];
+                document.getElementById('adminUsername').value = admin.username;
+                document.getElementById('adminFullName').value = admin.fullName;
+                document.getElementById('adminEmail').value = admin.email;
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminRole').value = admin.role;
+                document.getElementById('adminStatus').value = admin.status;
+            } else {
+                title.textContent = 'إضافة مشرف جديد';
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminFullName').value = '';
+                document.getElementById('adminEmail').value = '';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminRole').value = 'admin';
+                document.getElementById('adminStatus').value = 'active';
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        // إغلاق النافذة
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            editIndex = -1;
+            editType = '';
+        }
+        
+        // حفظ بيانات العميل
+        function saveClient() {
+            const name = document.getElementById('clientName').value.trim();
+            const email = document.getElementById('clientEmail').value.trim();
+            const phone = document.getElementById('clientPhone').value.trim();
+            const company = document.getElementById('clientCompany').value.trim();
+            const notes = document.getElementById('clientNotes').value.trim();
+            
+            if (!name || !email || !phone) {
+                alert('الرجاء ملء الحقول الإلزامية (الاسم، البريد الإلكتروني، الهاتف)');
+                return;
+            }
+            
+            // إنشاء معرف فريد للعميل
+            const clientId = editIndex >= 0 ? clients[editIndex].id : clients.length > 0 ? Math.max(...clients.map(c => c.id)) + 1 : 1;
+            
+            const clientData = {
+                id: clientId,
+                name,
+                email,
+                phone,
+                company,
+                notes,
+                date: editIndex >= 0 ? clients[editIndex].date : new Date().toISOString().split('T')[0],
+                status: editIndex >= 0 ? clients[editIndex].status : 'active'
+            };
+            
+            if (editIndex >= 0) {
+                clients[editIndex] = clientData;
+            } else {
+                clients.push(clientData);
+            }
+            
+            localStorage.setItem('clients', JSON.stringify(clients));
+            
+            updateDashboard();
+            updateClientsTable();
+            updateRecentClients();
+            populateClientSelects();
+            closeModal('clientModal');
+            
+            alert(editIndex >= 0 ? 'تم تعديل بيانات العميل بنجاح!' : 'تم إضافة العميل بنجاح!');
+        }
+        
+        // حفظ بيانات الاشتراك
+        function saveSubscription() {
+            const clientId = parseInt(document.getElementById('subscriptionClient').value);
+            const packageType = document.getElementById('subscriptionPackage').value;
+            const price = parseInt(document.getElementById('subscriptionPrice').value);
+            const startDate = document.getElementById('subscriptionStartDate').value;
+            const endDate = document.getElementById('subscriptionEndDate').value;
+            const status = document.getElementById('subscriptionStatus').value;
+            const notes = document.getElementById('subscriptionNotes').value.trim();
+            
+            if (!clientId || !packageType || !price || !startDate || !endDate) {
+                alert('الرجاء ملء جميع الحقول الإلزامية');
+                return;
+            }
+            
+            // العثور على اسم العميل من الـ ID
+            const client = clients.find(c => c.id === clientId);
+            if (!client) {
+                alert('العميل المحدد غير موجود');
+                return;
+            }
+            
+            // إنشاء معرف فريد للاشتراك
+            const subscriptionId = editIndex >= 0 ? subscriptions[editIndex].id : subscriptions.length > 0 ? Math.max(...subscriptions.map(s => s.id)) + 1 : 1;
+            
+            // ترجمة اسم الباقة
+            let packageName = '';
+            switch(packageType) {
+                case 'basic': packageName = 'الباقة الأساسية'; break;
+                case 'silver': packageName = 'الباقة الفضية'; break;
+                case 'gold': packageName = 'الباقة الذهبية'; break;
+                case 'platinum': packageName = 'الباقة البلاتينية'; break;
+                default: packageName = packageType;
+            }
+            
+            const subscriptionData = {
+                id: subscriptionId,
+                clientId,
+                clientName: client.name,
+                package: packageName,
+                price,
+                startDate,
+                endDate,
+                status,
+                notes
+            };
+            
+            if (editIndex >= 0) {
+                subscriptions[editIndex] = subscriptionData;
+            } else {
+                subscriptions.push(subscriptionData);
+            }
+            
+            localStorage.setItem('subscriptions', JSON.stringify(subscriptions));
+            
+            updateDashboard();
+            updateSubscriptionsTable();
+            closeModal('subscriptionModal');
+            
+            alert(editIndex >= 0 ? 'تم تعديل بيانات الاشتراك بنجاح!' : 'تم إضافة الاشتراك بنجاح!');
+        }
+        
+        // حفظ بيانات طلب التصميم
+        function saveDesign() {
+            const clientId = parseInt(document.getElementById('designClient').value);
+            const type = document.getElementById('designType').value;
+            const price = parseInt(document.getElementById('designPrice').value);
+            const details = document.getElementById('designDetails').value.trim();
+            const date = document.getElementById('designDate').value;
+            const status = document.getElementById('designStatus').value;
+            const notes = document.getElementById('designNotes').value.trim();
+            
+            if (!clientId || !type || !price || !details) {
+                alert('الرجاء ملء جميع الحقول الإلزامية');
+                return;
+            }
+            
+            // العثور على اسم العميل من الـ ID
+            const client = clients.find(c => c.id === clientId);
+            if (!client) {
+                alert('العميل المحدد غير موجود');
+                return;
+            }
+            
+            // إنشاء معرف فريد لطلب التصميم
+            const designId = editIndex >= 0 ? designRequests[editIndex].id : designRequests.length > 0 ? Math.max(...designRequests.map(d => d.id)) + 1 : 1;
+            
+            // ترجمة نوع التصميم
+            let typeName = '';
+            switch(type) {
+                case 'logo': typeName = 'تصميم شعار (Logo)'; break;
+                case 'website': typeName = 'تصميم موقع ويب'; break;
+                case 'mobile': typeName = 'تصميم تطبيق جوال'; break;
+                case 'branding': typeName = 'هوية بصرية'; break;
+                case 'social': typeName = 'تصاميم وسائل التواصل'; break;
+                case 'other': typeName = 'تصميم آخر'; break;
+                default: typeName = type;
+            }
+            
+            const designData = {
+                id: designId,
+                clientId,
+                clientName: client.name,
+                type: typeName,
+                price,
+                details,
+                date: date || new Date().toISOString().split('T')[0],
+                status,
+                notes
+            };
+            
+            if (editIndex >= 0) {
+                designRequests[editIndex] = designData;
+            } else {
+                designRequests.push(designData);
+            }
+            
+            localStorage.setItem('designRequests', JSON.stringify(designRequests));
+            
+            updateDashboard();
+            updateDesignTable();
+            closeModal('designModal');
+            
+            alert(editIndex >= 0 ? 'تم تعديل طلب التصميم بنجاح!' : 'تم إضافة طلب التصميم بنجاح!');
+        }
+        
+        // حفظ بيانات المشرف
+        function saveAdmin() {
+            const username = document.getElementById('adminUsername').value.trim();
+            const fullName = document.getElementById('adminFullName').value.trim();
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+            const role = document.getElementById('adminRole').value;
+            const status = document.getElementById('adminStatus').value;
+            
+            if (!username || !fullName || !email || (!password && editIndex === -1)) {
+                alert('الرجاء ملء جميع الحقول الإلزامية');
+                return;
+            }
+            
+            // التحقق من عدم تكرار اسم المستخدم (في حالة الإضافة فقط)
+            if (editIndex === -1 && admins.find(a => a.username === username)) {
+                alert('اسم المستخدم هذا موجود بالفعل، الرجاء اختيار اسم آخر');
+                return;
+            }
+            
+            const adminData = {
+                username,
+                fullName,
+                email,
+                password: editIndex >= 0 && !password ? admins[editIndex].password : password,
+                role,
+                status,
+                date: editIndex >= 0 ? admins[editIndex].date : new Date().toISOString().split('T')[0]
+            };
+            
+            if (editIndex >= 0) {
+                admins[editIndex] = adminData;
+                
+                // إذا كان المستخدم الحالي يقوم بتعديل حسابه الخاص
+                if (currentUser.username === username) {
+                    currentUser = adminData;
+                    document.getElementById('currentUserName').textContent = currentUser.fullName;
+                    document.getElementById('userAvatar').textContent = currentUser.fullName.charAt(0);
+                }
+            } else {
+                admins.push(adminData);
+            }
+            
+            localStorage.setItem('admins', JSON.stringify(admins));
+            
+            updateDashboard();
+            updateAdminsTable();
+            closeModal('adminModal');
+            
+            alert(editIndex >= 0 ? 'تم تعديل بيانات المشرف بنجاح!' : 'تم إضافة المشرف بنجاح!');
+        }
+        
+        // تعديل عميل
+        function editClient(index) {
+            openClientModal(index);
+        }
+        
+        // تعديل اشتراك
+        function editSubscription(index) {
+            openSubscriptionModal(index);
+        }
+        
+        // تعديل طلب تصميم
+        function editDesign(index) {
+            openDesignModal(index);
+        }
+        
+        // تعديل مشرف
+        function editAdmin(index) {
+            openAdminModal(index);
+        }
+        
+        // حذف عميل
+        function deleteClient(index) {
+            if (confirm('هل أنت متأكد من حذف هذا العميل؟')) {
+                clients.splice(index, 1);
+                localStorage.setItem('clients', JSON.stringify(clients));
+                
+                updateDashboard();
+                updateClientsTable();
+                updateRecentClients();
+                populateClientSelects();
+                
+                alert('تم حذف العميل بنجاح!');
+            }
+        }
+        
+        // حذف اشتراك
+        function deleteSubscription(index) {
+            if (confirm('هل أنت متأكد من حذف هذا الاشتراك؟')) {
+                subscriptions.splice(index, 1);
+                localStorage.setItem('subscriptions', JSON.stringify(subscriptions));
+                
+                updateDashboard();
+                updateSubscriptionsTable();
+                
+                alert('تم حذف الاشتراك بنجاح!');
+            }
+        }
+        
+        // حذف طلب تصميم
+        function deleteDesign(index) {
+            if (confirm('هل أنت متأكد من حذف طلب التصميم هذا؟')) {
+                designRequests.splice(index, 1);
+                localStorage.setItem('designRequests', JSON.stringify(designRequests));
+                
+                updateDashboard();
+                updateDesignTable();
+                
+                alert('تم حذف طلب التصميم بنجاح!');
+            }
+        }
+        
+        // حذف مشرف
+        function deleteAdmin(index) {
+            const admin = admins[index];
+            
+            // منع حذف المستخدم الحالي
+            if (admin.username === currentUser.username) {
+                alert('لا يمكنك حذف حسابك الخاص');
+                return;
+            }
+            
+            if (confirm('هل أنت متأكد من حذف هذا المشرف؟')) {
+                admins.splice(index, 1);
+                localStorage.setItem('admins', JSON.stringify(admins));
+                
+                updateDashboard();
+                updateAdminsTable();
+                
+                alert('تم حذف المشرف بنجاح!');
+            }
+        }
+        
+        // عرض تفاصيل طلب التصميم
+        function viewDesignDetails(index) {
+            const design = designRequests[index];
+            alert(`تفاصيل طلب التصميم:\n\nالعميل: ${design.clientName}\nالنوع: ${design.type}\nالسعر: ${design.price} ر.س\nالتفاصيل: ${design.details}\nالحالة: ${design.status}\nملاحظات: ${design.notes || 'لا يوجد'}`);
+        }
+        
+        // توليد الرسومات البيانية
+        function generateCharts() {
+            // رسم بياني للعملاء
+            const clientsCtx = document.getElementById('clientsChart').getContext('2d');
+            
+            // بيانات بسيطة للرسم البياني
+            const activeClients = clients.filter(c => c.status === 'active').length;
+            const inactiveClients = clients.filter(c => c.status === 'inactive').length;
+            
+            if (window.clientsChart) {
+                window.clientsChart.destroy();
+            }
+            
+            window.clientsChart = new Chart(clientsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['العملاء النشطين', 'العملاء غير النشطين'],
+                    datasets: [{
+                        data: [activeClients, inactiveClients],
+                        backgroundColor: ['#2ed573', '#ff4757'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // رسم بياني للاشتراكات
+            const subscriptionsCtx = document.getElementById('subscriptionsChart').getContext('2d');
+            
+            const activeSubs = subscriptions.filter(s => s.status === 'active').length;
+            const expiredSubs = subscriptions.filter(s => s.status === 'expired').length;
+            const pendingSubs = subscriptions.filter(s => s.status === 'pending').length;
+            
+            if (window.subscriptionsChart) {
+                window.subscriptionsChart.destroy();
+            }
+            
+            window.subscriptionsChart = new Chart(subscriptionsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['نشطة', 'منتهية', 'قيد الانتظار'],
+                    datasets: [{
+                        label: 'الاشتراكات',
+                        data: [activeSubs, expiredSubs, pendingSubs],
+                        backgroundColor: ['#1e90ff', '#ffa502', '#a4b0be'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // حساب الإيرادات
+        function calculateRevenue() {
+            // إيرادات الاشتراكات
+            const subscriptionRevenue = subscriptions.reduce((sum, sub) => {
+                return sum + (sub.price || 0);
+            }, 0);
+            
+            document.getElementById('totalSubscriptionRevenue').textContent = `${subscriptionRevenue} ر.س`;
+            
+            // إيرادات التصاميم
+            const designRevenue = designRequests.reduce((sum, design) => {
+                return sum + (design.price || 0);
+            }, 0);
+            
+            document.getElementById('totalDesignRevenue').textContent = `${designRevenue} ر.س`;
+            
+            // الإيراد الشهري (تقديري)
+            const monthlyRevenue = Math.round((subscriptionRevenue / 12) + (designRevenue / 12));
+            document.getElementById('monthlyRevenue').textContent = `${monthlyRevenue} ر.س`;
+        }
+        
+        // البحث في الجداول (سيتم تنفيذها لاحقاً حسب الحاجة)
+        // يمكن إضافة دوال للبحث والتصفية عند الحاجة
+    </script>
+</body>
+</html>
